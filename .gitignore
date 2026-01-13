@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.log
+.DS_Store
+dist/
+build/
+
+# 保留 data.json 和 prompts.json，它们需要被提交到仓库
+# data.json
+# prompts.json

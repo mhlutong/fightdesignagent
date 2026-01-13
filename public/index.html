@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英雄学院 - 战斗设计工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏰 英雄学院 - 战斗设计工具</h1>
+        </header>
+
+        <div class="main-content">
+            <!-- 深度思考开关 -->
+            <div class="control-section">
+                <label class="switch-label">
+                    <input type="checkbox" id="deepThinkingToggle" checked>
+                    <span class="switch-text">深度思考</span>
+                </label>
+            </div>
+
+            <!-- 职业大类 -->
+            <div class="section">
+                <h2>职业大类</h2>
+                <div id="professionsList" class="items-list">
+                    <!-- 职业项将通过JavaScript动态生成 -->
+                </div>
+                <button id="generateProfessionBtn" class="action-btn" style="margin-top: 15px;">
+                    ➕ 新增职业
+                </button>
+            </div>
+
+            <!-- 元素大类 -->
+            <div class="section">
+                <h2>元素大类</h2>
+                <div id="elementsList" class="items-list">
+                    <!-- 元素项将通过JavaScript动态生成 -->
+                </div>
+                <button id="generateElementBtn" class="action-btn" style="margin-top: 15px;">
+                    ➕ 新增元素
+                </button>
+            </div>
+
+            <!-- Prompt模板配置 -->
+            <div class="section">
+                <h2>Prompt模板配置</h2>
+                <table class="prompt-table">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>Prompt模板</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>新增职业</td>
+                            <td>
+                                <textarea class="prompt-input" id="professionPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是职业，一类是元素，目前已经有的职业是%z，目前已经有的元素是%y，现在给我生成一个新的职业，以json格式输出（只输出职业名）{"职业": "XX"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>新增元素</td>
+                            <td>
+                                <textarea class="prompt-input" id="elementPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是职业，一类是元素，目前已经有的职业是%z，目前已经有的元素是%y，现在给我生成一个新的元素，以json格式输出（只输出元素名）{"元素": "X元素"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>设计技能</td>
+                            <td>
+                                <textarea class="prompt-input" id="designSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是职业，目前已经有的职业是%z，%s，现在给新职业%z1设计常规技能，特征是%tp1，需要尽量符合职业特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>设计附魔</td>
+                            <td>
+                                <textarea class="prompt-input" id="designEnchantmentsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是元素，他们可以给技能附魔，目前已经有的元素是%y，%s，现在给新元素%y1设计给常规技能的附魔效果，特征是%te1，需要尽量符合元素特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>调整技能</td>
+                            <td>
+                                <textarea class="prompt-input" id="adjustSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是职业，现在有一个职业%z1，特征是%tp1，当前的技能是%s1，现在我需要调整他，调整方向为%a，需要尽量符合职业特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>调整附魔</td>
+                            <td>
+                                <textarea class="prompt-input" id="adjustEnchantmentsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是元素，现在有一个元素%y1，特征是%te1，当前的技能是%s1，现在我需要调整他，需要调整的内容是%a，需要尽量符合元素特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>调整被动技能</td>
+                            <td>
+                                <textarea class="prompt-input" id="adjustPassiveSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程%z1，特征是%t1，当前的被动技能是%s1，现在我需要调整他，需要调整的内容是%a，需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>设计被动技能</td>
+                            <td>
+                                <textarea class="prompt-input" id="designPassiveSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程%z1，特征是%t1，通过这个课程可以学会的常规技能是%s1，现在需要你设计两个此职业的被动技能。其他课程已有的被动技能为%s，注意不要重复。需要尽量符合课程特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="prompt-hint">
+                    <small>💡 提示：%z 代表职业列表，%y 代表元素列表，%tp 代表职业特征列表，%te 代表元素特征列表，%s 代表职业技能/附魔信息/其他被动技能，%z1/%y1 代表目标职业/元素，%tp1/%te1 代表目标职业/元素特征，%s1 代表当前技能/附魔/常规技能，%t1 代表目标特征，%a 代表调整方向，这些占位符会自动替换</small>
+                </div>
+                <button onclick="savePrompts()" class="save-btn" style="margin-top: 15px;">
+                    💾 保存Prompt模板到文件
+                </button>
+            </div>
+
+            <!-- API响应显示区域 -->
+            <div class="section">
+                <h2>AI响应</h2>
+                <div id="responseArea" class="response-area">
+                    <p class="placeholder">等待操作...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
