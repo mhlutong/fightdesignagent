@@ -1,3 +1,6 @@
+// 加载环境变量（如果存在 .env 文件）
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
