@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英雄学院 - 战斗设计工具</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -91,15 +92,27 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>调整被动技能</td>
+                            <td>调整被动技能1</td>
                             <td>
-                                <textarea class="prompt-input" id="adjustPassiveSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程%z1，特征是%t1，当前的被动技能是%s1，现在我需要调整他，需要调整的内容是%a，需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}</textarea>
+                                <textarea class="prompt-input" id="adjustPassiveSkill1Prompt" rows="3">我在做一个英雄学院背景的回合制游戏，里面的学生可以学习课程获得技能，现在有一个课程叫%z1，特征是%t1，这个课程的常规技能效果是%s1，这个课程当前的被动技能效果是%s2，现在我需要调整被动技能1（注意不要调整被动技能2），最重要的调整备注是"%a"，同时还需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，以json格式输出，格式为{"skill1": "技能名：技能描述",}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>调整被动技能2</td>
+                            <td>
+                                <textarea class="prompt-input" id="adjustPassiveSkill2Prompt" rows="3">我在做一个英雄学院背景的回合制游戏，里面的学生可以学习课程获得技能，现在有一个课程叫%z1，特征是%t1，这个课程的常规技能效果是%s1，这个课程当前的被动技能效果是%s2，现在我需要调整被动技能2（注意不要调整被动技能1），最重要的调整备注是"%a"，同时还需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，以json格式输出，格式为{"skill2": "技能名：技能描述",}</textarea>
                             </td>
                         </tr>
                         <tr>
                             <td>设计被动技能</td>
                             <td>
-                                <textarea class="prompt-input" id="designPassiveSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程%z1，特征是%t1，通过这个课程可以学会的常规技能是%s1，现在需要你设计两个此职业的被动技能。其他课程已有的被动技能为%s，注意不要重复。需要尽量符合课程特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}</textarea>
+                                <textarea class="prompt-input" id="designPassiveSkillsPrompt" rows="3">我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程叫%z1，特征是%t1，通过这个课程可以学会的常规技能是%s1，现在需要你设计两个此职业的被动技能。其他课程已有的被动技能为%s2，注意不要重复。需要尽量符合课程特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>设计终极技能</td>
+                            <td>
+                                <textarea class="prompt-input" id="designUltimateSkillPrompt" rows="3">我在做一个英雄学院背景的回合制游戏，里面的学生可以学习课程获得技能，现在给课程%z1设计终极技能，课程特征是%t1，常规技能是%s1，被动技能是%s2。终极技能需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，设计方向是%a，以json格式输出，格式为{"终极技能": "技能名：技能描述"}</textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -110,6 +123,17 @@
                 <button onclick="savePrompts()" class="save-btn" style="margin-top: 15px;">
                     💾 保存Prompt模板到文件
                 </button>
+            </div>
+
+            <!-- 数据导出 -->
+            <div class="section">
+                <h2>数据导出</h2>
+                <button onclick="exportToExcel()" class="action-btn" style="margin-top: 15px;">
+                    📊 一键导出Excel
+                </button>
+                <div class="prompt-hint">
+                    <small>💡 提示：导出所有职业和元素的常规技能、被动技能到Excel文件（heroskilloutput.xlsx）</small>
+                </div>
             </div>
 
             <!-- API响应显示区域 -->

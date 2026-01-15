@@ -36,11 +36,10 @@ async function callDeepSeekAPI(prompt, enableDeepThinking = true) {
       max_tokens: 2000
     };
 
-    // 如果启用深度思考，添加相应参数（DeepSeek可能通过模型名称或参数控制）
-    // 注意：DeepSeek的深度思考功能可能需要特定的模型变体或参数
+    // 如果启用深度思考，添加相应参数
     if (enableDeepThinking) {
-      // 某些DeepSeek模型变体可能支持深度思考参数
-      // 如果API支持，可以添加 deep_thinking: true 或其他参数
+      // DeepSeek API支持enable_thinking参数来启用深度思考功能
+      requestBody.enable_thinking = true;
     }
 
     const response = await axios.post(
@@ -165,8 +164,10 @@ app.get('/api/prompts', async (req, res) => {
         designEnchantments: '我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是元素，他们可以给技能附魔，目前已经有的元素是%y，%s，现在给新元素%y1设计给常规技能的附魔效果，特征是%te1，需要尽量符合元素特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}',
         adjustSkills: '我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是职业，现在有一个职业%z1，特征是%tp1，当前的技能是%s1，现在我需要调整他，调整方向为%a，需要尽量符合职业特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}',
         adjustEnchantments: '我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，每个课程可以从Lv1提升至Lv5，课程分成两个大类，一类是元素，现在有一个元素%y1，特征是%te1，当前的技能是%s1，现在我需要调整他，需要调整的内容是%a，需要尽量符合元素特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"lv1": "技能描述", "lv2": "技能描述", "lv3": "技能描述", "lv4": "技能描述", "lv5": "技能描述"}',
-        adjustPassiveSkills: '我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程%z1，特征是%t1，当前的被动技能是%s1，现在我需要调整他，需要调整的内容是%a，需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}',
-        designPassiveSkills: '我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程%z1，特征是%t1，通过这个课程可以学会的常规技能是%s1，现在需要你设计两个此职业的被动技能。其他课程已有的被动技能为%s，注意不要重复。需要尽量符合课程特征，并且控制复杂度不要太复杂，不要意向描述类文字，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}'
+        adjustPassiveSkill1: '我在做一个英雄学院背景的回合制游戏，里面的学生可以学习课程获得技能，现在有一个课程叫%z1，特征是%t1，这个课程的常规技能效果是%s1，这个课程当前的被动技能效果是%s2，现在我需要调整被动技能1（注意不要调整被动技能2），最重要的调整备注是"%a"，同时还需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，以json格式输出，格式为{"skill1": "技能名：技能描述",}',
+        adjustPassiveSkill2: '我在做一个英雄学院背景的回合制游戏，里面的学生可以学习课程获得技能，现在有一个课程叫%z1，特征是%t1，这个课程的常规技能效果是%s1，这个课程当前的被动技能效果是%s2，现在我需要调整被动技能2（注意不要调整被动技能1），最重要的调整备注是"%a"，同时还需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，以json格式输出，格式为{"skill2": "技能名：技能描述",}',
+        designPassiveSkills: '我在做一个英雄学院背景的游戏，里面的学生可以学习课程获得技能，现在有一个课程叫%z1，特征是%t1，通过这个课程可以学会的常规技能是%s1，现在需要你设计两个此职业的被动技能。其他课程已有的被动技能为%s2，注意不要重复。需要尽量符合课程特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，以json格式输出，格式为{"skill1": "技能描述", "skill2": "技能描述"}',
+        designUltimateSkill: '我在做一个英雄学院背景的回合制游戏，里面的学生可以学习课程获得技能，现在给课程%z1设计终极技能，课程特征是%t1，常规技能是%s1，被动技能是%s2。终极技能需要尽量符合特征，并且控制复杂度不要太复杂，不要意向描述类文字，描述需要精简，设计方向是%a，以json格式输出，格式为{"终极技能": "技能名：技能描述"}'
       }
     });
   }
@@ -177,7 +178,7 @@ app.post('/api/prompts', async (req, res) => {
   try {
     const { prompts } = req.body;
     
-    if (!prompts || !prompts.profession || !prompts.element || !prompts.designSkills || !prompts.designEnchantments || !prompts.adjustSkills || !prompts.adjustEnchantments || !prompts.adjustPassiveSkills || !prompts.designPassiveSkills) {
+    if (!prompts || !prompts.profession || !prompts.element || !prompts.designSkills || !prompts.designEnchantments || !prompts.adjustSkills || !prompts.adjustEnchantments || !prompts.adjustPassiveSkill1 || !prompts.adjustPassiveSkill2 || !prompts.designPassiveSkills || !prompts.designUltimateSkill) {
       return res.status(400).json({
         success: false,
         error: 'Prompt模板数据不完整'
@@ -231,7 +232,8 @@ app.get('/api/data', async (req, res) => {
             passiveSkills: {
               skill1: '',
               skill2: ''
-            }
+            },
+            ultimateSkill: ''
           },
           {
             name: '法师',
@@ -246,7 +248,8 @@ app.get('/api/data', async (req, res) => {
             passiveSkills: {
               skill1: '',
               skill2: ''
-            }
+            },
+            ultimateSkill: ''
           }
         ],
         elements: [
@@ -471,8 +474,8 @@ app.post('/api/adjust-enchantments', async (req, res) => {
   }
 });
 
-// API路由：调整被动技能
-app.post('/api/adjust-passive-skills', async (req, res) => {
+// API路由：调整被动技能1
+app.post('/api/adjust-passive-skill1', async (req, res) => {
   try {
     const { prompt, enableDeepThinking } = req.body;
 
@@ -500,7 +503,44 @@ app.post('/api/adjust-passive-skills', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('调整被动技能错误:', error);
+    console.error('调整被动技能1错误:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// API路由：调整被动技能2
+app.post('/api/adjust-passive-skill2', async (req, res) => {
+  try {
+    const { prompt, enableDeepThinking } = req.body;
+
+    // 验证prompt是否存在
+    if (!prompt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Prompt不能为空'
+      });
+    }
+
+    // 调用DeepSeek API
+    const result = await callDeepSeekAPI(prompt, enableDeepThinking);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        content: result.content,
+        usage: result.usage
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('调整被动技能2错误:', error);
     res.status(500).json({
       success: false,
       error: error.message
@@ -538,6 +578,43 @@ app.post('/api/design-passive-skills', async (req, res) => {
     }
   } catch (error) {
     console.error('设计被动技能错误:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// API路由：设计终极技能
+app.post('/api/design-ultimate-skill', async (req, res) => {
+  try {
+    const { prompt, enableDeepThinking } = req.body;
+
+    // 验证prompt是否存在
+    if (!prompt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Prompt不能为空'
+      });
+    }
+
+    // 调用DeepSeek API
+    const result = await callDeepSeekAPI(prompt, enableDeepThinking);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        content: result.content,
+        usage: result.usage
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('设计终极技能错误:', error);
     res.status(500).json({
       success: false,
       error: error.message

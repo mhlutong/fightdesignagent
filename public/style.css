@@ -212,16 +212,9 @@ header h1 {
 
 .items-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 15px;
-    max-width: 1190px;
     margin: 0;
-}
-
-@media (max-width: 1200px) {
-    .items-list {
-        grid-template-columns: 1fr;
-    }
 }
 
 .item-row {
@@ -795,6 +788,97 @@ header h1 {
 }
 
 .passive-skill-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.ultimate-skill-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.ultimate-skill-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.ultimate-skill-direction-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9em;
+    transition: border-color 0.3s;
+    min-width: 150px;
+}
+
+.ultimate-skill-direction-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.design-ultimate-skill-btn {
+    padding: 6px 10px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.design-ultimate-skill-btn:hover {
+    background: linear-gradient(135deg, #ee5a6f 0%, #dc4c64 100%);
+    transform: translateY(-1px);
+}
+
+.design-ultimate-skill-btn:active {
+    transform: translateY(0);
+}
+
+.design-ultimate-skill-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ultimate-skill-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.ultimate-skill-label {
+    width: 90px;
+    font-weight: 600;
+    color: #667eea;
+    text-align: right;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+
+.ultimate-skill-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9em;
+    transition: border-color 0.3s;
+    min-width: 0;
+}
+
+.ultimate-skill-input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);

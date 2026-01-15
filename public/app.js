@@ -11,8 +11,10 @@ const designSkillsPromptInput = document.getElementById('designSkillsPrompt');
 const designEnchantmentsPromptInput = document.getElementById('designEnchantmentsPrompt');
 const adjustSkillsPromptInput = document.getElementById('adjustSkillsPrompt');
 const adjustEnchantmentsPromptInput = document.getElementById('adjustEnchantmentsPrompt');
-const adjustPassiveSkillsPromptInput = document.getElementById('adjustPassiveSkillsPrompt');
+const adjustPassiveSkill1PromptInput = document.getElementById('adjustPassiveSkill1Prompt');
+const adjustPassiveSkill2PromptInput = document.getElementById('adjustPassiveSkill2Prompt');
 const designPassiveSkillsPromptInput = document.getElementById('designPassiveSkillsPrompt');
+const designUltimateSkillPromptInput = document.getElementById('designUltimateSkillPrompt');
 
 // 保存防抖定时器
 let saveTimer = null;
@@ -105,7 +107,10 @@ function getAllGameData() {
             }
         });
 
-        professions.push({ name, trait, skills, passiveSkills });
+        const ultimateSkillInput = item.querySelector('.ultimate-skill-input');
+        const ultimateSkill = ultimateSkillInput ? ultimateSkillInput.value.trim() : '';
+
+        professions.push({ name, trait, skills, passiveSkills, ultimateSkill });
     });
 
     // 获取元素数据
@@ -235,7 +240,8 @@ function createProfessionItem(profession) {
                     <button class="design-passive-skill-btn" onclick="designPassiveSkills(this)">🎨 设计被动技能</button>
                     <div class="adjust-passive-section">
                         <input type="text" class="adjust-passive-direction-input">
-                        <button class="adjust-passive-skill-btn" onclick="adjustPassiveSkills(this)">🔧 调整被动技能</button>
+                        <button class="adjust-passive-skill-btn" onclick="adjustPassiveSkill1(this)">🔧 调整被动技能1</button>
+                        <button class="adjust-passive-skill-btn" onclick="adjustPassiveSkill2(this)">🔧 调整被动技能2</button>
                     </div>
                 </div>
                 <div class="passive-skill-row">
@@ -245,6 +251,16 @@ function createProfessionItem(profession) {
                 <div class="passive-skill-row">
                     <span class="passive-skill-label">被动技能2:</span>
                     <input type="text" class="passive-skill-input" data-skill="skill2" value="${passiveSkills.skill2 || ''}" placeholder="被动技能2">
+                </div>
+            </div>
+            <div class="ultimate-skill-section">
+                <div class="ultimate-skill-header">
+                    <button class="design-ultimate-skill-btn" onclick="designUltimateSkill(this)">🎨 设计终极技能</button>
+                    <input type="text" class="ultimate-skill-direction-input" placeholder="设计方向（可选）">
+                </div>
+                <div class="ultimate-skill-row">
+                    <span class="ultimate-skill-label">终极技能:</span>
+                    <input type="text" class="ultimate-skill-input" value="${profession.ultimateSkill || ''}" placeholder="终极技能">
                 </div>
             </div>
         </div>
@@ -266,6 +282,10 @@ function createProfessionItem(profession) {
     passiveSkillInputs.forEach(input => {
         input.addEventListener('input', autoSave);
     });
+    const ultimateSkillInput = item.querySelector('.ultimate-skill-input');
+    if (ultimateSkillInput) {
+        ultimateSkillInput.addEventListener('input', autoSave);
+    }
 
     return item;
 }
@@ -330,7 +350,8 @@ function createElementItem(element) {
                     <button class="design-passive-skill-btn" onclick="designPassiveSkills(this)">🎨 设计被动技能</button>
                     <div class="adjust-passive-section">
                         <input type="text" class="adjust-passive-direction-input">
-                        <button class="adjust-passive-skill-btn" onclick="adjustPassiveSkills(this)">🔧 调整被动技能</button>
+                        <button class="adjust-passive-skill-btn" onclick="adjustPassiveSkill1(this)">🔧 调整被动技能1</button>
+                        <button class="adjust-passive-skill-btn" onclick="adjustPassiveSkill2(this)">🔧 调整被动技能2</button>
                     </div>
                 </div>
                 <div class="passive-skill-row">
@@ -840,11 +861,17 @@ async function loadPrompts() {
             if (data.prompts.adjustEnchantments) {
                 adjustEnchantmentsPromptInput.value = data.prompts.adjustEnchantments;
             }
-            if (data.prompts.adjustPassiveSkills) {
-                adjustPassiveSkillsPromptInput.value = data.prompts.adjustPassiveSkills;
+            if (data.prompts.adjustPassiveSkill1) {
+                adjustPassiveSkill1PromptInput.value = data.prompts.adjustPassiveSkill1;
+            }
+            if (data.prompts.adjustPassiveSkill2) {
+                adjustPassiveSkill2PromptInput.value = data.prompts.adjustPassiveSkill2;
             }
             if (data.prompts.designPassiveSkills) {
                 designPassiveSkillsPromptInput.value = data.prompts.designPassiveSkills;
+            }
+            if (data.prompts.designUltimateSkill) {
+                designUltimateSkillPromptInput.value = data.prompts.designUltimateSkill;
             }
             console.log('Prompt模板已加载');
         }
@@ -862,11 +889,13 @@ async function savePrompts() {
         designEnchantments: designEnchantmentsPromptInput.value.trim(),
         adjustSkills: adjustSkillsPromptInput.value.trim(),
         adjustEnchantments: adjustEnchantmentsPromptInput.value.trim(),
-        adjustPassiveSkills: adjustPassiveSkillsPromptInput.value.trim(),
-        designPassiveSkills: designPassiveSkillsPromptInput.value.trim()
+        adjustPassiveSkill1: adjustPassiveSkill1PromptInput.value.trim(),
+        adjustPassiveSkill2: adjustPassiveSkill2PromptInput.value.trim(),
+        designPassiveSkills: designPassiveSkillsPromptInput.value.trim(),
+        designUltimateSkill: designUltimateSkillPromptInput.value.trim()
     };
 
-    if (!prompts.profession || !prompts.element || !prompts.designSkills || !prompts.designEnchantments || !prompts.adjustSkills || !prompts.adjustEnchantments || !prompts.adjustPassiveSkills || !prompts.designPassiveSkills) {
+    if (!prompts.profession || !prompts.element || !prompts.designSkills || !prompts.designEnchantments || !prompts.adjustSkills || !prompts.adjustEnchantments || !prompts.adjustPassiveSkill1 || !prompts.adjustPassiveSkill2 || !prompts.designPassiveSkills || !prompts.designUltimateSkill) {
         showResponse('错误：所有Prompt模板不能为空', true);
         return;
     }
@@ -1257,10 +1286,8 @@ async function adjustSkills(button) {
         return;
     }
 
-    if (!adjustDirection) {
-        showResponse('错误：请输入调整方向', true);
-        return;
-    }
+    // 如果调整方向为空，默认使用"完全重新设计"
+    const finalAdjustDirection = adjustDirection || '完全重新设计';
 
     // 从模板中获取prompt
     const promptTemplate = adjustSkillsPromptInput.value.trim();
@@ -1296,7 +1323,7 @@ async function adjustSkills(button) {
     prompt = prompt.replace(/%z1/g, currentProfessionName);
     prompt = prompt.replace(/%tp1/g, currentProfessionTrait);
     prompt = prompt.replace(/%s1/g, skillsDesc || '无');
-    prompt = prompt.replace(/%a/g, adjustDirection);
+    prompt = prompt.replace(/%a/g, finalAdjustDirection);
 
     // 禁用按钮，显示加载状态
     button.disabled = true;
@@ -1389,10 +1416,8 @@ async function adjustEnchantments(button) {
         return;
     }
 
-    if (!adjustDirection) {
-        showResponse('错误：请输入调整方向', true);
-        return;
-    }
+    // 如果调整方向为空，默认使用"完全重新设计"
+    const finalAdjustDirection = adjustDirection || '完全重新设计';
 
     // 从模板中获取prompt
     const promptTemplate = adjustEnchantmentsPromptInput.value.trim();
@@ -1428,7 +1453,7 @@ async function adjustEnchantments(button) {
     prompt = prompt.replace(/%y1/g, currentElementName);
     prompt = prompt.replace(/%te1/g, currentElementTrait);
     prompt = prompt.replace(/%s1/g, enchantmentsDesc || '无');
-    prompt = prompt.replace(/%a/g, adjustDirection);
+    prompt = prompt.replace(/%a/g, finalAdjustDirection);
 
     // 禁用按钮，显示加载状态
     button.disabled = true;
@@ -1636,7 +1661,7 @@ async function designPassiveSkills(button) {
     prompt = prompt.replace(/%z1/g, currentName);
     prompt = prompt.replace(/%t1/g, currentTrait);
     prompt = prompt.replace(/%s1/g, skillsDesc || '无');
-    prompt = prompt.replace(/%s/g, otherPassiveSkillsDesc || '无');
+    prompt = prompt.replace(/%s2/g, otherPassiveSkillsDesc || '无');
 
     // 禁用按钮，显示加载状态
     button.disabled = true;
@@ -1742,8 +1767,18 @@ async function designPassiveSkills(button) {
     }
 }
 
-// 调整被动技能
-async function adjustPassiveSkills(button) {
+// 调整被动技能1
+async function adjustPassiveSkill1(button) {
+    await adjustPassiveSkill(button, 'skill1', 'adjustPassiveSkill1');
+}
+
+// 调整被动技能2
+async function adjustPassiveSkill2(button) {
+    await adjustPassiveSkill(button, 'skill2', 'adjustPassiveSkill2');
+}
+
+// 调整被动技能（通用函数）
+async function adjustPassiveSkill(button, targetSkill, promptType) {
     // 判断是职业还是元素
     const professionItem = button.closest('.profession-item');
     const elementItem = button.closest('.element-item');
@@ -1768,15 +1803,14 @@ async function adjustPassiveSkills(button) {
     const adjustDirectionInput = item.querySelector('.adjust-passive-direction-input');
     const adjustDirection = adjustDirectionInput ? adjustDirectionInput.value.trim() : '';
 
-    if (!adjustDirection) {
-        showResponse('错误：请输入调整方向', true);
-        return;
-    }
+    // 如果调整方向为空，默认使用"完全重新设计"
+    const finalAdjustDirection = adjustDirection || '完全重新设计';
 
     // 从模板中获取prompt
-    const promptTemplate = adjustPassiveSkillsPromptInput.value.trim();
+    const promptInput = promptType === 'adjustPassiveSkill1' ? adjustPassiveSkill1PromptInput : adjustPassiveSkill2PromptInput;
+    const promptTemplate = promptInput.value.trim();
     if (!promptTemplate) {
-        showResponse('错误：调整被动技能prompt模板不能为空', true);
+        showResponse(`错误：调整被动技能${targetSkill === 'skill1' ? '1' : '2'}prompt模板不能为空`, true);
         return;
     }
 
@@ -1785,6 +1819,33 @@ async function adjustPassiveSkills(button) {
         ? item.querySelector('.profession-trait-input')
         : item.querySelector('.element-trait-input');
     const currentTrait = traitInput ? traitInput.value.trim() : '无特征';
+
+    // 获取当前课程的常规技能（职业是skills，元素是enchantments）
+    const currentSkills = {};
+    if (isProfession) {
+        ['lv1', 'lv2', 'lv3', 'lv4', 'lv5'].forEach(level => {
+            const skillInput = item.querySelector(`.skill-input[data-level="${level}"]`);
+            if (skillInput) {
+                currentSkills[level] = skillInput.value.trim();
+            }
+        });
+    } else {
+        ['lv1', 'lv2', 'lv3', 'lv4', 'lv5'].forEach(level => {
+            const enchantInput = item.querySelector(`.enchantment-input[data-level="${level}"]`);
+            if (enchantInput) {
+                currentSkills[level] = enchantInput.value.trim();
+            }
+        });
+    }
+
+    // 构建当前常规技能/附魔技能描述字符串
+    const skillsDesc = ['lv1', 'lv2', 'lv3', 'lv4', 'lv5']
+        .map(level => {
+            const skill = currentSkills[level];
+            return skill ? `${level}: ${skill}` : '';
+        })
+        .filter(s => s)
+        .join('，');
 
     // 获取当前被动技能
     const currentPassiveSkills = {};
@@ -1808,12 +1869,13 @@ async function adjustPassiveSkills(button) {
     let prompt = promptTemplate;
     prompt = prompt.replace(/%z1/g, currentName);
     prompt = prompt.replace(/%t1/g, currentTrait);
-    prompt = prompt.replace(/%s1/g, passiveSkillsDesc || '无');
-    prompt = prompt.replace(/%a/g, adjustDirection);
+    prompt = prompt.replace(/%s1/g, skillsDesc || '无');
+    prompt = prompt.replace(/%s2/g, passiveSkillsDesc || '无');
+    prompt = prompt.replace(/%a/g, finalAdjustDirection);
 
     // 禁用按钮，显示加载状态
     button.disabled = true;
-    showLoading(`正在调整"${currentName}"的被动技能`);
+    showLoading(`正在调整"${currentName}"的被动技能${targetSkill === 'skill1' ? '1' : '2'}`);
 
     // 显示最终prompt用于调试
     const promptDiv = document.createElement('div');
@@ -1828,7 +1890,8 @@ async function adjustPassiveSkills(button) {
     responseArea.appendChild(promptDiv);
 
     try {
-        const response = await fetch('/api/adjust-passive-skills', {
+        const apiEndpoint = promptType === 'adjustPassiveSkill1' ? '/api/adjust-passive-skill1' : '/api/adjust-passive-skill2';
+        const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1851,7 +1914,7 @@ async function adjustPassiveSkills(button) {
             let passiveSkills = null;
             try {
                 const json = JSON.parse(data.content);
-                if (json.skill1 || json.skill2) {
+                if (json[targetSkill]) {
                     passiveSkills = json;
                 }
             } catch (e) {
@@ -1861,14 +1924,12 @@ async function adjustPassiveSkills(button) {
                     try {
                         passiveSkills = JSON.parse(jsonMatch[0]);
                     } catch (e2) {
-                        // 尝试更宽松的匹配
+                        // 尝试更宽松的匹配，只匹配目标技能
                         passiveSkills = {};
-                        ['skill1', 'skill2'].forEach(skill => {
-                            const match = data.content.match(new RegExp(`"${skill}"\\s*:\\s*"([^"]+)"`));
-                            if (match && match[1]) {
-                                passiveSkills[skill] = match[1];
-                            }
-                        });
+                        const match = data.content.match(new RegExp(`"${targetSkill}"\\s*:\\s*"([^"]+)"`));
+                        if (match && match[1]) {
+                            passiveSkills[targetSkill] = match[1];
+                        }
                         if (Object.keys(passiveSkills).length === 0) {
                             passiveSkills = null;
                         }
@@ -1876,26 +1937,24 @@ async function adjustPassiveSkills(button) {
                 }
             }
 
-            if (passiveSkills && Object.keys(passiveSkills).length > 0) {
-                // 替换被动技能到输入框
-                ['skill1', 'skill2'].forEach(skill => {
-                    const passiveSkillInput = item.querySelector(`.passive-skill-input[data-skill="${skill}"]`);
-                    if (passiveSkillInput && passiveSkills[skill]) {
-                        passiveSkillInput.value = passiveSkills[skill];
-                    }
-                });
+            if (passiveSkills && passiveSkills[targetSkill]) {
+                // 只更新目标被动技能
+                const passiveSkillInput = item.querySelector(`.passive-skill-input[data-skill="${targetSkill}"]`);
+                if (passiveSkillInput) {
+                    passiveSkillInput.value = passiveSkills[targetSkill];
+                }
 
                 // 自动保存
                 autoSave();
 
                 const infoDiv = document.createElement('div');
                 infoDiv.className = 'profession-added';
-                infoDiv.textContent = `✅ 成功调整"${currentName}"的被动技能`;
+                infoDiv.textContent = `✅ 成功调整"${currentName}"的被动技能${targetSkill === 'skill1' ? '1' : '2'}`;
                 responseArea.appendChild(infoDiv);
             } else {
                 const infoDiv = document.createElement('div');
                 infoDiv.className = 'profession-added';
-                infoDiv.textContent = '⚠️ 无法从响应中提取被动技能信息，请手动检查并添加';
+                infoDiv.textContent = `⚠️ 无法从响应中提取被动技能${targetSkill === 'skill1' ? '1' : '2'}信息，请手动检查并添加`;
                 responseArea.appendChild(infoDiv);
             }
         } else {
@@ -1905,7 +1964,7 @@ async function adjustPassiveSkills(button) {
             responseArea.appendChild(errorDiv);
         }
     } catch (error) {
-        console.error('调整被动技能错误:', error);
+        console.error(`调整被动技能${targetSkill === 'skill1' ? '1' : '2'}错误:`, error);
         const errorDiv = document.createElement('div');
         errorDiv.className = 'response-content error';
         errorDiv.textContent = `网络错误：${error.message}`;
@@ -1922,6 +1981,338 @@ deepThinkingToggle.addEventListener('change', autoSave);
 generateProfessionBtn.addEventListener('click', generateProfession);
 generateElementBtn.addEventListener('click', generateElement);
 
+// 设计终极技能
+async function designUltimateSkill(button) {
+    // 判断是职业还是元素
+    const professionItem = button.closest('.profession-item');
+    const elementItem = button.closest('.element-item');
+    const item = professionItem || elementItem;
+    
+    if (!item) {
+        showResponse('错误：无法找到对应的卡片', true);
+        return;
+    }
+
+    const isProfession = !!professionItem;
+    const nameInput = isProfession 
+        ? item.querySelector('.profession-name-input')
+        : item.querySelector('.element-name-input');
+    const currentName = nameInput ? nameInput.value.trim() : '';
+
+    if (!currentName) {
+        showResponse(`错误：请先输入${isProfession ? '职业' : '元素'}名称`, true);
+        return;
+    }
+
+    // 从模板中获取prompt
+    const promptTemplate = designUltimateSkillPromptInput.value.trim();
+    if (!promptTemplate) {
+        showResponse('错误：设计终极技能prompt模板不能为空', true);
+        return;
+    }
+
+    // 获取特征
+    const traitInput = isProfession
+        ? item.querySelector('.profession-trait-input')
+        : item.querySelector('.element-trait-input');
+    const currentTrait = traitInput ? traitInput.value.trim() : '无特征';
+
+    // 获取当前课程的常规技能（职业是skills，元素是enchantments）
+    const currentSkills = {};
+    if (isProfession) {
+        ['lv1', 'lv2', 'lv3', 'lv4', 'lv5'].forEach(level => {
+            const skillInput = item.querySelector(`.skill-input[data-level="${level}"]`);
+            if (skillInput) {
+                currentSkills[level] = skillInput.value.trim();
+            }
+        });
+    } else {
+        ['lv1', 'lv2', 'lv3', 'lv4', 'lv5'].forEach(level => {
+            const enchantInput = item.querySelector(`.enchantment-input[data-level="${level}"]`);
+            if (enchantInput) {
+                currentSkills[level] = enchantInput.value.trim();
+            }
+        });
+    }
+
+    // 构建当前常规技能描述字符串
+    const skillsDesc = ['lv1', 'lv2', 'lv3', 'lv4', 'lv5']
+        .map(level => {
+            const skill = currentSkills[level];
+            return skill ? `${level}: ${skill}` : '';
+        })
+        .filter(s => s)
+        .join('，');
+
+    // 获取当前被动技能
+    const currentPassiveSkills = {};
+    ['skill1', 'skill2'].forEach(skill => {
+        const passiveSkillInput = item.querySelector(`.passive-skill-input[data-skill="${skill}"]`);
+        if (passiveSkillInput) {
+            currentPassiveSkills[skill] = passiveSkillInput.value.trim();
+        }
+    });
+
+    // 构建当前被动技能描述字符串
+    const passiveSkillsDesc = ['skill1', 'skill2']
+        .map(skill => {
+            const skillText = currentPassiveSkills[skill];
+            return skillText ? `${skill}: ${skillText}` : '';
+        })
+        .filter(s => s)
+        .join('，');
+
+    // 获取设计方向（如果为空，默认使用"完全重新设计"）
+    const directionInput = item.querySelector('.ultimate-skill-direction-input');
+    const direction = directionInput ? directionInput.value.trim() : '';
+    const finalDirection = direction || '完全重新设计';
+
+    // 构建最终的prompt，替换占位符
+    let prompt = promptTemplate;
+    prompt = prompt.replace(/%z1/g, currentName);
+    prompt = prompt.replace(/%t1/g, currentTrait);
+    prompt = prompt.replace(/%s1/g, skillsDesc || '无');
+    prompt = prompt.replace(/%s2/g, passiveSkillsDesc || '无');
+    prompt = prompt.replace(/%a/g, finalDirection);
+
+    // 禁用按钮，显示加载状态
+    button.disabled = true;
+    showLoading(`正在为"${currentName}"设计终极技能`);
+
+    // 显示最终prompt用于调试
+    const promptDiv = document.createElement('div');
+    promptDiv.className = 'response-content';
+    promptDiv.style.background = '#e3f2fd';
+    promptDiv.style.padding = '15px';
+    promptDiv.style.borderRadius = '5px';
+    promptDiv.style.borderLeft = '4px solid #2196f3';
+    promptDiv.style.marginBottom = '10px';
+    promptDiv.innerHTML = `<strong>📝 最终Prompt：</strong><br><pre style="white-space: pre-wrap; word-wrap: break-word; margin-top: 10px;">${prompt}</pre>`;
+    responseArea.innerHTML = '';
+    responseArea.appendChild(promptDiv);
+
+    try {
+        const response = await fetch('/api/design-ultimate-skill', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                enableDeepThinking: deepThinkingToggle.checked
+            })
+        });
+
+        // 检查响应状态
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP错误 ${response.status}: ${text.substring(0, 100)}`);
+        }
+
+        // 检查Content-Type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            throw new Error(`响应不是JSON格式，收到: ${text.substring(0, 100)}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            const responseDiv = document.createElement('div');
+            responseDiv.className = 'response-content success';
+            responseDiv.textContent = data.content;
+            responseArea.appendChild(responseDiv);
+
+            // 解析返回的终极技能JSON
+            let ultimateSkill = null;
+            try {
+                const json = JSON.parse(data.content);
+                if (json['终极技能']) {
+                    ultimateSkill = json['终极技能'];
+                }
+            } catch (e) {
+                // 尝试提取JSON部分
+                const jsonMatch = data.content.match(/\{[\s\S]*"终极技能"[\s\S]*\}/);
+                if (jsonMatch) {
+                    try {
+                        const json = JSON.parse(jsonMatch[0]);
+                        if (json['终极技能']) {
+                            ultimateSkill = json['终极技能'];
+                        }
+                    } catch (e2) {
+                        // 尝试更宽松的匹配
+                        const match = data.content.match(/"终极技能"\s*:\s*"([^"]+)"/);
+                        if (match && match[1]) {
+                            ultimateSkill = match[1];
+                        }
+                    }
+                }
+            }
+
+            if (ultimateSkill) {
+                // 填充终极技能到输入框
+                const ultimateSkillInput = item.querySelector('.ultimate-skill-input');
+                if (ultimateSkillInput) {
+                    ultimateSkillInput.value = ultimateSkill;
+                }
+
+                // 自动保存
+                autoSave();
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'profession-added';
+                infoDiv.textContent = `✅ 成功为"${currentName}"设计终极技能`;
+                responseArea.appendChild(infoDiv);
+            } else {
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'profession-added';
+                infoDiv.textContent = '⚠️ 无法从响应中提取终极技能信息，请手动检查并添加';
+                responseArea.appendChild(infoDiv);
+            }
+        } else {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'response-content error';
+            errorDiv.textContent = `错误：${data.error}`;
+            responseArea.appendChild(errorDiv);
+        }
+    } catch (error) {
+        console.error('设计终极技能错误:', error);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'response-content error';
+        errorDiv.textContent = `网络错误：${error.message}`;
+        responseArea.appendChild(errorDiv);
+    } finally {
+        button.disabled = false;
+    }
+}
+
+// 导出到Excel
+function exportToExcel() {
+    try {
+        const gameData = getAllGameData();
+        const wb = XLSX.utils.book_new();
+
+        // 创建职业工作表 - 每个技能占一行
+        const professionData = [];
+        professionData.push(['职业名', '特征', '技能类型', '技能描述']);
+        
+        gameData.professions.forEach(prof => {
+            const name = prof.name || '';
+            const trait = prof.trait || '';
+            
+            // 添加常规技能（Lv1-Lv5）
+            ['lv1', 'lv2', 'lv3', 'lv4', 'lv5'].forEach(level => {
+                const skill = prof.skills?.[level];
+                if (skill) {
+                    professionData.push([
+                        name,
+                        trait,
+                        `Lv${level.charAt(level.length - 1)}技能`,
+                        skill
+                    ]);
+                }
+            });
+            
+            // 添加被动技能
+            if (prof.passiveSkills?.skill1) {
+                professionData.push([
+                    name,
+                    trait,
+                    '被动技能1',
+                    prof.passiveSkills.skill1
+                ]);
+            }
+            if (prof.passiveSkills?.skill2) {
+                professionData.push([
+                    name,
+                    trait,
+                    '被动技能2',
+                    prof.passiveSkills.skill2
+                ]);
+            }
+            
+            // 添加终极技能
+            if (prof.ultimateSkill) {
+                professionData.push([
+                    name,
+                    trait,
+                    '终极技能',
+                    prof.ultimateSkill
+                ]);
+            }
+        });
+
+        const professionWs = XLSX.utils.aoa_to_sheet(professionData);
+        // 设置列宽
+        professionWs['!cols'] = [
+            { wch: 15 }, // 职业名
+            { wch: 20 }, // 特征
+            { wch: 15 }, // 技能类型
+            { wch: 60 }  // 技能描述
+        ];
+        XLSX.utils.book_append_sheet(wb, professionWs, '职业');
+
+        // 创建元素工作表 - 每个技能占一行
+        const elementData = [];
+        elementData.push(['元素名', '特征', '技能类型', '技能描述']);
+        
+        gameData.elements.forEach(elem => {
+            const name = elem.name || '';
+            const trait = elem.trait || '';
+            
+            // 添加附魔技能（Lv1-Lv5）
+            ['lv1', 'lv2', 'lv3', 'lv4', 'lv5'].forEach(level => {
+                const enchantment = elem.enchantments?.[level];
+                if (enchantment) {
+                    elementData.push([
+                        name,
+                        trait,
+                        `Lv${level.charAt(level.length - 1)}附魔`,
+                        enchantment
+                    ]);
+                }
+            });
+            
+            // 添加被动技能
+            if (elem.passiveSkills?.skill1) {
+                elementData.push([
+                    name,
+                    trait,
+                    '被动技能1',
+                    elem.passiveSkills.skill1
+                ]);
+            }
+            if (elem.passiveSkills?.skill2) {
+                elementData.push([
+                    name,
+                    trait,
+                    '被动技能2',
+                    elem.passiveSkills.skill2
+                ]);
+            }
+        });
+
+        const elementWs = XLSX.utils.aoa_to_sheet(elementData);
+        // 设置列宽
+        elementWs['!cols'] = [
+            { wch: 15 }, // 元素名
+            { wch: 20 }, // 特征
+            { wch: 15 }, // 技能类型
+            { wch: 60 }  // 技能描述
+        ];
+        XLSX.utils.book_append_sheet(wb, elementWs, '元素');
+
+        // 生成Excel文件并下载
+        XLSX.writeFile(wb, 'heroskilloutput.xlsx');
+        
+        showResponse('✅ Excel文件已成功导出！文件名：heroskilloutput.xlsx', false);
+    } catch (error) {
+        console.error('导出Excel错误:', error);
+        showResponse(`❌ 导出失败：${error.message}`, true);
+    }
+}
+
 // 将函数暴露到全局作用域
 window.toggleSkills = toggleSkills;
 window.toggleEnchantments = toggleEnchantments;
@@ -1935,7 +2326,10 @@ window.designEnchantments = designEnchantments;
 window.adjustSkills = adjustSkills;
 window.adjustEnchantments = adjustEnchantments;
 window.designPassiveSkills = designPassiveSkills;
-window.adjustPassiveSkills = adjustPassiveSkills;
+window.adjustPassiveSkill1 = adjustPassiveSkill1;
+window.adjustPassiveSkill2 = adjustPassiveSkill2;
+window.designUltimateSkill = designUltimateSkill;
+window.exportToExcel = exportToExcel;
 
 // 页面加载完成时加载数据
 window.addEventListener('load', () => {
